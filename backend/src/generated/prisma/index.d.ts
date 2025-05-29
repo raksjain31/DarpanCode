@@ -7728,10 +7728,10 @@ export namespace Prisma {
 
   export type SubmissionWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    userId?: string
     AND?: SubmissionWhereInput | SubmissionWhereInput[]
     OR?: SubmissionWhereInput[]
     NOT?: SubmissionWhereInput | SubmissionWhereInput[]
+    userId?: StringFilter<"Submission"> | string
     problemId?: StringFilter<"Submission"> | string
     sourceCode?: JsonFilter<"Submission">
     language?: StringFilter<"Submission"> | string
@@ -7747,7 +7747,7 @@ export namespace Prisma {
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     problem?: XOR<ProblemScalarRelationFilter, ProblemWhereInput>
     testCases?: TestCaseResultListRelationFilter
-  }, "id" | "userId">
+  }, "id">
 
   export type SubmissionOrderByWithAggregationInput = {
     id?: SortOrder
@@ -7911,17 +7911,17 @@ export namespace Prisma {
 
   export type ProblemSolvedWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    userId?: string
     userId_problemId?: ProblemSolvedUserIdProblemIdCompoundUniqueInput
     AND?: ProblemSolvedWhereInput | ProblemSolvedWhereInput[]
     OR?: ProblemSolvedWhereInput[]
     NOT?: ProblemSolvedWhereInput | ProblemSolvedWhereInput[]
+    userId?: StringFilter<"ProblemSolved"> | string
     problemId?: StringFilter<"ProblemSolved"> | string
     createdAt?: DateTimeFilter<"ProblemSolved"> | Date | string
     updatedAt?: DateTimeFilter<"ProblemSolved"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     problem?: XOR<ProblemScalarRelationFilter, ProblemWhereInput>
-  }, "id" | "userId" | "userId_problemId">
+  }, "id" | "userId_problemId">
 
   export type ProblemSolvedOrderByWithAggregationInput = {
     id?: SortOrder
