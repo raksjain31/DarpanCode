@@ -1,0 +1,207 @@
+import { db } from "../libs/db.js";
+
+export const createPlaylist = async (req, res) => {
+    try {
+        const { name, decription } = req.body
+        const userid = req.user.id;
+
+        const playlist = await playlist.create({
+            data: {
+                name,
+                description,
+                userId
+            }
+        });
+        res.status(200).json({
+            success: true,
+            message: "Playlist created successfully",
+            playlist
+        })
+
+    } catch (error) {
+
+        console.error('Error Creating Playlist', error);
+        res.status(500).json({
+            error: "Failed to create Playlist"
+        });
+
+
+    }
+}
+
+    export const getAllListDetails = async (req, res) => {
+        try {
+
+            const playlists = await db.playlist.findMany({
+                where: {
+                    userId: req.user.id
+                },
+                include: {
+                    problems: {
+                        include: {
+                            problem: true
+                        }
+                    }
+                }
+            });
+            res.status(200).json({
+                success: true,
+                message: "All Playlist Fetched successfully",
+                playlists
+            })
+
+
+        } catch (error) {
+
+            console.error('Error Fectching All Playlist', error);
+            res.status(500).json({
+                error: "Failed to Fetch All Playlist"
+            });
+
+        }
+
+    }
+
+    export const getPlayListDetails = async (req, res) => {
+        try {
+            const { playlistId } = req.params;
+
+            const playlist = await db.playlist.findunique({
+                where: {
+                    id: playlistId,
+                    userId: req.user.id,
+                },
+                include: {
+                    problems: {
+                        include: {
+                            problem: true
+                        }
+                    }
+                }
+
+            });
+            if (!playlist) {
+                return res.status(404).json({
+                    Error: "Playlist not found"
+                })
+            }
+
+            res.status(200).json({
+                success: true,
+                message: 'Playlist fetched sucessfully',
+                playlist,
+
+            })
+
+
+        } catch (error) {
+            console.error('Error Fectching Playlist', error);
+            res.status(500).json({
+                error: "Failed to Fetch Playlist"
+            });
+
+        }
+
+
+    }
+
+    export const addProblemToPlaylist = async (req, res) => {
+        const { playlistId } = req.params;
+        const { problemIds } = req.body;
+
+        try {
+            if (!Array.isArray(problemIds) || problemIds.length === 0) {
+                return res.status(400).json({
+                    error: "Invalid or Missing Problem Id"
+                })
+            }
+            //create records for each probems in playlist
+            const problemsInPlaylist = await db.problemsInPlaylist.createMany({
+                data: problemIds.map((problemId) => ({
+                    playlistId,
+                    problemId
+
+                }))
+            })
+
+            res.status(201).json({
+                success: true,
+                message: 'Problems added to playlist successfully',
+                problemsInPlaylist,
+            })
+
+        } catch (error) {
+
+            console.error('Error Adding Problem in Playlist', error);
+            res.status(500).json({
+                error: "Failed to Add Problem in Playlist"
+            });
+
+        }
+
+    }
+
+    export const deletePlaylist = async (req, res) => {
+        try {
+            const { playlistId } = req.params;
+            const deletedplaylist = await db.playlist.findunique({
+                where: {
+                    id: playlistId,
+                    //userId: req.user.id,
+                }
+
+            });
+
+            res.status(200).json({
+                success: true,
+                message: "Playlist deleted successfully",
+                deletedplaylist,
+            });
+
+        } catch (error) {
+            console.error('Error Deleting Playlist:', error.message);
+            res.status(500).json({
+                error: "Failed to delete Playlist"
+
+            });
+
+        }
+
+    }
+     export const removeProblemFormPlaylist = async (req, res) => {
+        const {playlistId} = req.params;
+        const {problemIds} = req.body;
+
+        try {
+             if (!Array.isArray(problemIds) || problemIds.length === 0) {
+                return res.status(400).json({
+                    error: "Invalid or Missing Problem Id"
+                })
+            }
+
+            const deletedProblem = await db.problemsInPlaylist.deleteMany({
+                where:{
+                    playlistId,
+                    problemId: {
+                        in: problemIds
+                    }
+                }
+
+            });
+
+            res.status(200).json({
+                success: true,
+                message: "Problems removed from playlist successfully",
+                deletedProblem
+            })
+
+        } catch (error) {
+              console.error('Error Removing From Playlist:', error.message);
+            res.status(500).json({
+                error: "Failed to remove problem from Playlist"
+
+            });
+            
+        }
+    }
+    
