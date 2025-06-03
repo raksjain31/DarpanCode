@@ -1,33 +1,27 @@
 import { db } from "../libs/db.js";
 
-export const createPlaylist = async (req, res) => {
+export const createPlayList = async (req, res) => {
     try {
-        const { name, decription } = req.body
-        const userid = req.user.id;
+    const { name, description } = req.body;
+    const userId = req.user.id;
 
-        const playlist = await playlist.create({
-            data: {
-                name,
-                description,
-                userId
-            }
-        });
-        res.status(200).json({
-            success: true,
-            message: "Playlist created successfully",
-            playlist
-        })
-
-    } catch (error) {
-
-        console.error('Error Creating Playlist', error);
-        res.status(500).json({
-            error: "Failed to create Playlist"
-        });
-
-
-    }
-}
+    const playList = await db.playlist.create({
+      data: {
+        name,
+        description,
+        userId,
+      },
+    });
+    res.status(200).json({
+      success: true,
+      message: "Playlist created successfully",
+      playList,
+    });
+  } catch (error) {
+    console.error("Error creating playlist:", error);
+    res.status(500).json({ error: "Failed to create playlist" });
+  }
+};
 
     export const getAllListDetails = async (req, res) => {
         try {
