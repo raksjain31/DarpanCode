@@ -3,6 +3,10 @@ import { useAuthStore } from '../store/useAuthStore'
 import { Link, useActionData } from "react-router-dom"
 import useAction from '../store/useAction'
 import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
+import { usePlaylistStore } from '../store/usePlaylistStore';
+import AddToPlaylistModal from "./AddToPlaylist";
+import CreatePlaylistModal from './CreatePlaylistModal';
+
 const ProblemTable = ({ problems }) => {
     const { authUser } = useAuthStore();
 
@@ -10,10 +14,13 @@ const ProblemTable = ({ problems }) => {
     const [difficulty, setDifficulty] = useState("ALL");
     const [selectedTag, setSelectedTag] = useState("ALL");
     const [currentPage, setCurrentPage] = useState(1);
+    const [IsCreateModalOpen,setIsCreateModalOpen] = useState(false);
+    const [isAddToPlaylistModalOpen,setIsAddToPlaylistModalOpen] =useState(false);
+    const { isDeletingProblem, onDeleteProblem } = useAction();
+    const [selectedProblemId,setSelectedProblemId] = useState(null);
+    const {createPlaylist} = usePlaylistStore();
 
-const {isDeletingProblem,onDeleteProblem} = useAction();
-
-const allTags = useMemo(() => {
+    const allTags = useMemo(() => {
         if (!Array.isArray(problems)) return [];
         const tagsSet = new Set();
         problems.forEach((p) => p.tags?.forEach((t) => tagsSet.add(t)));
@@ -50,20 +57,20 @@ const allTags = useMemo(() => {
 
     const handleDelete = (id) => {
         const isConfirmed = confirm("Are you sure you want to delete this Problem ?")
-    if (isConfirmed) {
-          onDeleteProblem(id);
-    }
+        if (isConfirmed) {
+            onDeleteProblem(id);
+        }
 
-  
-  };
- const handleCreatePlaylist = async (data) => {
-    await createPlaylist(data);
-  };
 
-  const handleAddToPlaylist = (problemId) => {
-    setSelectedProblemId(problemId);
-    setIsAddToPlaylistModalOpen(true);
-  };
+    };
+    const handleCreatePlaylist = async (data) => {
+        await createPlaylist(data);
+    };
+
+    const  handleAddToPlaylist = (problemId) => {
+        setSelectedProblemId(problemId);
+        setIsAddToPlaylistModalOpen(true);
+    };
 
 
     return (
@@ -188,10 +195,10 @@ const allTags = useMemo(() => {
                                                                     isDeletingProblem ? (
                                                                         <span className="loading loading-spinner text-white"></span>
                                                                     ) : (
-                                                                         <TrashIcon className="w-4 h-4 text-white" />
+                                                                        <TrashIcon className="w-4 h-4 text-white" />
                                                                     )
                                                                 }
-                                                              
+
                                                             </button>
                                                             <button disabled className="btn btn-sm btn-warning">
                                                                 <PencilIcon className="w-4 h-4 text-white" />
@@ -225,22 +232,37 @@ const allTags = useMemo(() => {
                 <div className="flex justify-center ">
                     <button className="btn btn-sm" disabled={currentPage === 1}
                         onClick={() => setCurrentPage((prev) => prev - 1)}>
-                    Prev 
+                        Prev
                     </button>
-                    <span className = "btn btn-ghost btn-sm">
+                    <span className="btn btn-ghost btn-sm">
                         {currentPage} /{totalPages}
 
                     </span>
-                    <button className= "btn btn-sm"
-                    disabled={currentPage === totalPages} 
-                    onClick={() => setCurrentPage((prev) => prev + 1)}>
-                    Next
+                    <button className="btn btn-sm"
+                        disabled={currentPage === totalPages}
+                        onClick={() => setCurrentPage((prev) => prev + 1)}>
+                        Next
                     </button>
                 </div>
             }
+                    <CreatePlaylistModal
+                        isOpen={IsCreateModalOpen}
+                        onClose={()=>setIsCreateModalOpen(false)}
+                        onSubmit= {handleCreatePlaylist}
+                    
+                    />
+
+                    <AddToPlaylistModal
+                    isOpen ={isAddToPlaylistModalOpen}
+                    onClose ={()=> setIsAddToPlaylistModalOpen(false)}
+                    problemId = {selectedProblemId}
+                    />
+            
+            
 
         </div>
-    )
-}
+      
+    );
+};
 
 export default ProblemTable
