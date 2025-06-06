@@ -109,7 +109,17 @@ export const getAllProblems = async (req, res) => {
 
     try {
         
-        const problems = await db.problem.findMany();
+        const problems = await db.problem.findMany(
+            {
+                include:{
+                    solvedBy:{
+                        where:{
+                            userId:req.user.id
+                        }
+                    }
+                }
+            }
+        );
 
         if(!problems)
         {
@@ -132,7 +142,7 @@ export const getAllProblems = async (req, res) => {
     }
 }
 
-export const getProblembyId = async (req, res) => { 
+export const getProblemById  = async (req, res) => { 
     const {id} = req.params;
     try {
          const problem = await db.problem.findUnique({
